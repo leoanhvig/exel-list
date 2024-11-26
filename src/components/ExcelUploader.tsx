@@ -42,6 +42,16 @@ function capitalizeString(str: string, full = true) {
   // Join the words back into a string
 }
 
+const arr = [
+  "ngayDangKy",
+  "nxnNgaySinh",
+  "nxnThoiGianCuTruTu",
+  "nxnThoiGianCuTruDen",
+  "nktNgaySinh",
+  "nktNgayChet",
+];
+const arr1 = ["nguoiThucHien", "nguoiKy", "nxnHoTen", "nycHoTen", "nktHoTen"];
+
 export default function ExcelUploader() {
   const [excelData, setExcelData] = useState<Record<string, any>[]>([]);
   const [fileName, setFileName] = useState("");
@@ -123,13 +133,6 @@ export default function ExcelUploader() {
     (newData: any) => {
       const datas = { ...newData };
       const keys = Object.keys(datas);
-      const arr = [
-        "ngayDangKy",
-        "nxnNgaySinh",
-        "nxnThoiGianCuTruTu",
-        "nxnThoiGianCuTruDen",
-      ];
-      const arr1 = ["nguoiThucHien", "nguoiKy", "nxnHoTen", "nycHoTen"];
       keys.forEach((key) => {
         if (arr.includes(key)) {
           const value = datas[key]?.replaceAll(".", "");
