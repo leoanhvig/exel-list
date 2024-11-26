@@ -6,6 +6,7 @@ import { useCallback, useState } from "react";
 import * as XLSX from "xlsx";
 import DynamicFormHN from "./DynamicFormHN";
 import DynamicFormKT from "./DynamicFormKT";
+import DynamicFormUpdate from "./DynamicFormUpdate";
 
 function formatDate(dateString: string) {
   // Check if the input is in the format "DDMMYYYY"
@@ -47,6 +48,7 @@ export default function ExcelUploader() {
   const [headers, setHeaders] = useState<string[]>([]);
   const [showUpload, setShowUpload] = useState(true);
   const [form, setForm] = useState("");
+  const [editingRow, setEditingRow] = useState<number | null>(null);
 
   const handleFileUpload = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -161,10 +163,29 @@ export default function ExcelUploader() {
     XLSX.writeFile(wb, fileName);
   }, [excelData, fileName, headers]);
 
+  const handleEdit = useCallback((index: number) => {
+    setEditingRow(index);
+  }, []);
+
+  const handleCancel = useCallback(() => {
+    setEditingRow(null);
+  }, [setEditingRow]);
+
+  const handleSave = useCallback(
+    (updatedRow: any) => {
+      if (editingRow === null) return;
+      const newData = [...excelData];
+      newData[editingRow] = updatedRow;
+      setExcelData(newData);
+      setEditingRow(null);
+    },
+    [editingRow, excelData]
+  );
+
   return (
     <div className="space-y-8 w-full">
       {showUpload && (
-        <>
+        <div className="flex items-center gap-4">
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
             <label className="flex flex-col items-center justify-center cursor-pointer">
               {/* <ArrowUpTrayIcon className="max-w-3 w-3 h-3 text-gray-400" /> */}
@@ -189,16 +210,29 @@ export default function ExcelUploader() {
               />
             </label>
           </div>
-        </>
+        </div>
       )}
 
       {headers.length > 0 && (
         <div className="space-y-6">
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">
-              Add New Data, hiện có: {excelData.length}
-            </h2>
-            {form === "HN" ? (
+            {editingRow !== null ? (
+              <h2 className="text-xl font-semibold mb-4">
+                UPDATE ROW {editingRow}
+              </h2>
+            ) : (
+              <h2 className="text-xl font-semibold mb-4">
+                Add New Data, hiện có: {excelData.length}
+              </h2>
+            )}
+            {editingRow !== null ? (
+              <DynamicFormUpdate
+                headers={headers}
+                template={excelData[editingRow]}
+                onSubmit={handleSave}
+                handleCancel={handleCancel}
+              />
+            ) : form === "HN" ? (
               <DynamicFormHN
                 headers={headers}
                 template={excelData[excelData.length - 1]}
@@ -242,6 +276,9 @@ export default function ExcelUploader() {
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
                     <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">
+                      ACTION
+                    </th>
+                    <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">
                       STT
                     </th>
                     {headers.map((header) => (
@@ -257,6 +294,14 @@ export default function ExcelUploader() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {[...excelData].reverse().map((row, index) => (
                     <tr key={index} className="bg-white border-b ">
+                      <td className="px-6 border py-4 whitespace-nowrap text-black text-sm">
+                        <button
+                          onClick={() => handleEdit(index)}
+                          className="text-blue-600 hover:text-blue-900"
+                        >
+                          EDIT
+                        </button>
+                      </td>
                       <td className="px-6 border py-4 whitespace-nowrap text-black text-sm">
                         {index + 1}
                       </td>
