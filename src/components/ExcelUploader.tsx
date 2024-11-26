@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import clsx from "clsx";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import * as XLSX from "xlsx";
-import DynamicForm from "./DynamicForm";
+import DynamicFormHN from "./DynamicFormHN";
+import DynamicFormKT from "./DynamicFormKT";
 
 function formatDate(dateString: string) {
   // Check if the input is in the format "DDMMYYYY"
@@ -40,88 +42,110 @@ function capitalizeString(str: string, full = true) {
 }
 
 export default function ExcelUploader() {
-  const [excelData, setExcelData] = useState<any[]>([]);
+  const [excelData, setExcelData] = useState<Record<string, any>[]>([]);
   const [fileName, setFileName] = useState("");
   const [headers, setHeaders] = useState<string[]>([]);
   const [showUpload, setShowUpload] = useState(true);
-  // const [template, setTemplate] = useState<Record<string, any>>({});
+  const [form, setForm] = useState("");
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFileUpload = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-    setFileName(file.name);
-    const reader = new FileReader();
+      setFileName(file.name);
+      const reader = new FileReader();
 
-    reader.onload = (e) => {
-      const data = e.target?.result;
-      const workbook = XLSX.read(data, { type: "binary" });
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      const parsedData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+      reader.onload = (e) => {
+        const data = e.target?.result;
+        const workbook = XLSX.read(data, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const parsedData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-      if (parsedData.length >= 2) {
-        let headerRow = parsedData[0] as string[];
-        const templateRow = parsedData[1] as any[];
-        const template: Record<string, any> = {};
-        headerRow = headerRow.map((el) => el.trim());
+        if (parsedData.length >= 2) {
+          let headerRow = parsedData[0] as string[];
+          const templateRow = parsedData[1] as any[];
+          const template: Record<string, any> = {};
+          headerRow = headerRow.map((el) => el.trim());
 
-        headerRow.forEach((header, index) => {
-          template[header] = templateRow[index];
-        });
-
-        setHeaders(headerRow);
-        // setTemplate(template);
-        const arr = parsedData.slice(1);
-        console.log(arr);
-        let dataWithHeaders: Record<string, any>[] = [];
-        if (arr && arr.length > 0 && (arr[0] as any[]).length > 0) {
-          // Convert remaining rows to objects with headers
-          dataWithHeaders = arr.map((row: any) => {
-            console.log({ row });
-            const obj: Record<string, any> = {};
-            headerRow.forEach((header, index) => {
-              console.log("row[index]");
-              if (row[index]) obj[header] = row[index];
-            });
-            return obj;
+          headerRow.forEach((header, index) => {
+            template[header] = templateRow[index];
           });
+
+          setHeaders(headerRow);
+          // setTemplate(template);
+          const arr = parsedData.slice(1);
+          console.log(arr);
+          let dataWithHeaders: Record<string, any>[] = [];
+          if (arr && arr.length > 0 && (arr[0] as any[]).length > 0) {
+            // Convert remaining rows to objects with headers
+            dataWithHeaders = arr.map((row: any) => {
+              console.log({ row });
+              const obj: Record<string, any> = {};
+              headerRow.forEach((header, index) => {
+                console.log("row[index]");
+                if (row[index]) obj[header] = row[index];
+              });
+              return obj;
+            });
+          }
+
+          setExcelData(dataWithHeaders);
+          setShowUpload(false);
         }
+      };
 
-        setExcelData(dataWithHeaders);
-        setShowUpload(false);
-      }
-    };
+      reader.readAsBinaryString(file);
+    },
+    []
+  );
 
-    reader.readAsBinaryString(file);
-  };
+  const handleFileUploadHN = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      handleFileUpload(e);
+      setForm("HN");
+    },
+    [handleFileUpload]
+  );
 
-  const handleAddData = (newData: any) => {
-    const datas = { ...newData };
-    const keys = Object.keys(datas);
-    const arr = [
-      "ngayDangKy",
-      "nxnNgaySinh",
-      "nxnThoiGianCuTruTu",
-      "nxnThoiGianCuTruDen",
-    ];
-    const arr1 = ["nguoiThucHien", "nguoiKy", "nxnHoTen", "nycHoTen"];
-    keys.forEach((key) => {
-      if (arr.includes(key)) {
-        const value = datas[key]?.replaceAll(".", "");
-        datas[key] = formatDate(value);
-      } else if (arr1.includes(key)) {
-        datas[key] = capitalizeString(datas[key]);
-      } else if (datas[key]?.length > 0) {
-        datas[key] = capitalizeString(datas[key] ?? "", false);
-      }
-    });
+  const handleFileUploadKT = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      handleFileUpload(e);
+      setForm("KT");
+    },
+    [handleFileUpload]
+  );
 
-    const updatedData = [...excelData, datas];
-    setExcelData(updatedData);
-  };
+  const handleAddData = useCallback(
+    (newData: any) => {
+      const datas = { ...newData };
+      const keys = Object.keys(datas);
+      const arr = [
+        "ngayDangKy",
+        "nxnNgaySinh",
+        "nxnThoiGianCuTruTu",
+        "nxnThoiGianCuTruDen",
+      ];
+      const arr1 = ["nguoiThucHien", "nguoiKy", "nxnHoTen", "nycHoTen"];
+      keys.forEach((key) => {
+        if (arr.includes(key)) {
+          const value = datas[key]?.replaceAll(".", "");
+          datas[key] = formatDate(value);
+        } else if (arr1.includes(key)) {
+          datas[key] = capitalizeString(datas[key]);
+        } else if (datas[key]?.length > 0) {
+          datas[key] = capitalizeString(datas[key] ?? "", false);
+        }
+      });
 
-  const handleExportData = () => {
+      const updatedData = [...excelData, datas];
+      setExcelData(updatedData);
+    },
+    [excelData]
+  );
+
+  const handleExportData = useCallback(() => {
     const updatedData = [...excelData];
 
     // Create new workbook and save file
@@ -135,23 +159,37 @@ export default function ExcelUploader() {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
     XLSX.writeFile(wb, fileName);
-  };
+  }, [excelData, fileName, headers]);
 
   return (
     <div className="space-y-8 w-full">
       {showUpload && (
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
-          <label className="flex flex-col items-center justify-center cursor-pointer">
-            {/* <ArrowUpTrayIcon className="max-w-3 w-3 h-3 text-gray-400" /> */}
-            <span className="mt-2 text-gray-600">Upload Excel File</span>
-            <input
-              type="file"
-              className="hidden"
-              accept=".xlsx, .xls"
-              onChange={handleFileUpload}
-            />
-          </label>
-        </div>
+        <>
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
+            <label className="flex flex-col items-center justify-center cursor-pointer">
+              {/* <ArrowUpTrayIcon className="max-w-3 w-3 h-3 text-gray-400" /> */}
+              <span className="mt-2 text-gray-600">Upload Excel File HN</span>
+              <input
+                type="file"
+                className="hidden"
+                accept=".xlsx, .xls"
+                onChange={handleFileUploadHN}
+              />
+            </label>
+          </div>
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
+            <label className="flex flex-col items-center justify-center cursor-pointer">
+              {/* <ArrowUpTrayIcon className="max-w-3 w-3 h-3 text-gray-400" /> */}
+              <span className="mt-2 text-gray-600">Upload Excel File KT</span>
+              <input
+                type="file"
+                className="hidden"
+                accept=".xlsx, .xls"
+                onChange={handleFileUploadKT}
+              />
+            </label>
+          </div>
+        </>
       )}
 
       {headers.length > 0 && (
@@ -160,11 +198,21 @@ export default function ExcelUploader() {
             <h2 className="text-xl font-semibold mb-4">
               Add New Data, hiện có: {excelData.length}
             </h2>
-            <DynamicForm
-              headers={headers}
-              template={excelData[excelData.length - 1]}
-              onSubmit={handleAddData}
-            />
+            {form === "HN" ? (
+              <DynamicFormHN
+                headers={headers}
+                template={excelData[excelData.length - 1]}
+                onSubmit={handleAddData}
+              />
+            ) : form === "KT" ? (
+              <DynamicFormKT
+                headers={headers}
+                template={excelData[excelData.length - 1]}
+                onSubmit={handleAddData}
+              />
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       )}
@@ -207,7 +255,7 @@ export default function ExcelUploader() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {excelData.map((row, index) => (
+                  {[...excelData].reverse().map((row, index) => (
                     <tr key={index} className="bg-white border-b ">
                       <td className="px-6 border py-4 whitespace-nowrap text-black text-sm">
                         {index + 1}

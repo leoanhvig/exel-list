@@ -1,5 +1,4 @@
-"use client";
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import clsx from "clsx";
 import { useState } from "react";
 
@@ -29,7 +28,7 @@ export default function DataForm({ onSubmit }: DataFormProps) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label
-          htmlhtmlFor="name"
+          htmlFor="name"
           className="block text-sm font-medium text-gray-700"
         >
           Name
@@ -50,7 +49,7 @@ export default function DataForm({ onSubmit }: DataFormProps) {
 
       <div>
         <label
-          htmlhtmlFor="email"
+          htmlFor="email"
           className="block text-sm font-medium text-gray-700"
         >
           Email
@@ -71,7 +70,7 @@ export default function DataForm({ onSubmit }: DataFormProps) {
 
       <div>
         <label
-          htmlhtmlFor="department"
+          htmlFor="department"
           className="block text-sm font-medium text-gray-700"
         >
           Department

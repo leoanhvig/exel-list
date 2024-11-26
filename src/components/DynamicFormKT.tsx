@@ -1,42 +1,26 @@
-"use client";
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import clsx from "clsx";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 interface DynamicFormProps {
   headers: string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   template: Record<string, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSubmit: (data: Record<string, any>) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const defaultValue: any = {
   nguoiKy: "Doãn Đình Tứ",
   chucVuNguoiKy: "Chủ tịch",
   nguoiThucHien: "Ngụy Thanh Tuyên",
-  // XAC NHAN HON NHAN
-  // nxnGioiTinh: "1",
-  // nxnLoaiGiayToTuyThan: "1",
-  // nxnDanToc: "Kinh",
-  // nxnQuocTich: "Việt Nam",
-  // nxnLoaiMucDichSuDung: "1",
-  // nxnLoaiCuTru: "1",
-  // nxnThoiGianCuTruTai: "Giao Thanh",
-  // nxnTinhTrangHonNhan: "Chưa kết hôn lần nào",
-  // nxnNoiCuTru: "Xóm , Giao Thanh",
-  // nxnSoGiayToTuyThan: "162",
-  // nxnMucDichSuDung: "",
-  // nycQuanHe: "",
-  // nxnThoiGianCuTruDen: "",
-  // nxnHoTen: "",
-  // nycHoTen: "",
-
-  // KHAI TU
   nktGioiTinh: 1,
   nktNoiCuTru: "Xóm ",
   nktNoiChet: "Tại gia đình",
 };
 
-export default function DynamicForm({
+export default function DynamicFormKT({
   headers,
   template,
   onSubmit,
@@ -64,10 +48,6 @@ export default function DynamicForm({
     else return defaultValue;
   }, [template]);
 
-  useEffect(() => {
-    console.log("defaultData1", defaultData1);
-  }, [defaultData1]);
-
   const [formData, setFormData] = useState<Record<string, any>>(defaultData1);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -78,28 +58,11 @@ export default function DynamicForm({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    let finalValue = value;
-    setFormData((prev) => ({ ...prev, [name]: finalValue }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const resetForm = () => {
     const newData: any = {
-      // nxnGioiTinh: "1",
-      // nxnDanToc: "Kinh",
-      // nxnQuocTich: "Việt Nam",
-      // nxnLoaiGiayToTuyThan: "1",
-      // nxnLoaiMucDichSuDung: "1",
-      // nxnLoaiCuTru: "1",
-      // nxnThoiGianCuTruTai: "Giao Thanh",
-      // nxnTinhTrangHonNhan: "Chưa kết hôn lần nào",
-      // nxnNoiCuTru: "Xóm , Giao Thanh",
-      // nxnSoGiayToTuyThan: "162",
-      // nxnMucDichSuDung: "",
-      // nycQuanHe: "",
-      // nxnHoTen: "",
-      // nycHoTen: "",
-      // nxnNgaySinh: "",
-      // nxnThoiGianCuTruTu: "",
       nktGioiTinh: 1,
       nktNoiCuTru: "Xóm ",
       nktNoiChet: "Tại gia đình",
