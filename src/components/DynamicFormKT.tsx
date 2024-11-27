@@ -13,9 +13,8 @@ interface DynamicFormProps {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const defaultValue: any = {
   nguoiKy: ".",
-  // chucVuNguoiKy: "Chủ tịch",
-  // nguoiThucHien: "Ngụy Thanh Tuyên",
-  nguoiThucHien: "Nguyễn Văn Lợi",
+  chucVuNguoiKy: "",
+  nguoiThucHien: "Ngụy Thanh Tuyên",
   nktGioiTinh: 1,
   nktNoiCuTru: "Xóm , Giao Thanh, Giao Thủy, Nam Định",
   nktNoiChet: "Tại gia đình",
@@ -66,12 +65,14 @@ export default function DynamicFormKT({
     const newData: any = {
       nktHoTen: "",
       nktNgaySinh: "",
-      nguoiThucHien: "Nguyễn Văn Lợi",
+      nguoiThucHien: "Ngụy Thanh Tuyên",
       nktGioiTinh: 1,
       nktNoiCuTru: "Xóm , Giao Thanh, Giao Thủy, Nam Định",
       nktNoiChet: "Tại gia đình",
       nycQuanHe: "",
       nycHoTen: "",
+      nktNgayChet: "",
+      nktGioPhutChet: "",
     };
     setFormData((prev) => ({ ...prev, ...newData }));
   };
