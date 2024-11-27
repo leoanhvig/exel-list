@@ -314,7 +314,9 @@ export default function ExcelUploader() {
                     <tr key={index} className="bg-white border-b ">
                       <td className="px-6 border py-4 whitespace-nowrap text-black text-sm">
                         <button
-                          onClick={() => handleEdit(index)}
+                          onClick={() =>
+                            handleEdit(excelData.length - 1 - index)
+                          }
                           className="text-blue-600 hover:text-blue-900"
                         >
                           EDIT
