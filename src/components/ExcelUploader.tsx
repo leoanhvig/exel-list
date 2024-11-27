@@ -102,8 +102,13 @@ export default function ExcelUploader() {
               return obj;
             });
           }
-
-          setExcelData(dataWithHeaders);
+          let list: any = localStorage.getItem("excel");
+          if (list) {
+            list = JSON.parse(list);
+            setExcelData(list);
+          } else {
+            setExcelData(dataWithHeaders);
+          }
           setShowUpload(false);
         }
       };
@@ -129,23 +134,31 @@ export default function ExcelUploader() {
     [handleFileUpload]
   );
 
+  const handleData = useCallback((newData: any) => {
+    const datas = { ...newData };
+    const keys = Object.keys(datas);
+    keys.forEach((key) => {
+      if (arr.includes(key)) {
+        const value = datas[key]?.replaceAll(".", "");
+        datas[key] = formatDate(value);
+      } else if (arr1.includes(key)) {
+        datas[key] = capitalizeString(datas[key]);
+      } else if (datas[key]?.length > 0) {
+        datas[key] = capitalizeString(datas[key] ?? "", false);
+      }
+    });
+
+    return datas;
+  }, []);
+
   const handleAddData = useCallback(
     (newData: any) => {
-      const datas = { ...newData };
-      const keys = Object.keys(datas);
-      keys.forEach((key) => {
-        if (arr.includes(key)) {
-          const value = datas[key]?.replaceAll(".", "");
-          datas[key] = formatDate(value);
-        } else if (arr1.includes(key)) {
-          datas[key] = capitalizeString(datas[key]);
-        } else if (datas[key]?.length > 0) {
-          datas[key] = capitalizeString(datas[key] ?? "", false);
-        }
-      });
-
-      const updatedData = [...excelData, datas];
-      setExcelData(updatedData);
+      const updatedData = handleData(newData);
+      setExcelData([...excelData, updatedData]);
+      localStorage.setItem(
+        "excel",
+        JSON.stringify([...excelData, updatedData])
+      );
     },
     [excelData]
   );
@@ -164,6 +177,7 @@ export default function ExcelUploader() {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
     XLSX.writeFile(wb, fileName);
+    localStorage.removeItem("excel");
   }, [excelData, fileName, headers]);
 
   const handleEdit = useCallback((index: number) => {
@@ -178,7 +192,8 @@ export default function ExcelUploader() {
     (updatedRow: any) => {
       if (editingRow === null) return;
       const newData = [...excelData];
-      newData[editingRow] = updatedRow;
+      const updatedData = handleData(updatedRow);
+      newData[editingRow] = updatedData;
       setExcelData(newData);
       setEditingRow(null);
     },

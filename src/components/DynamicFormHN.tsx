@@ -88,8 +88,8 @@ export default function DynamicFormHN({
       nxnSoGiayToTuyThan: "162",
       nxnMucDichSuDung: "",
       nycQuanHe: "",
-      nxnHoTen: "",
       nycHoTen: "",
+      nxnHoTen: "",
       nxnNgaySinh: "",
       nxnThoiGianCuTruTu: "",
     };
