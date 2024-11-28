@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { useCallback, useState } from "react";
 import * as XLSX from "xlsx";
 import DynamicFormHN from "./DynamicFormHN";
+import DynamicFormKS from "./DynamicFormKS";
 import DynamicFormKT from "./DynamicFormKT";
 import DynamicFormUpdate from "./DynamicFormUpdate";
 
@@ -23,18 +24,32 @@ function formatDate(dateString: string) {
   return dateString;
 }
 
+function capitalizeName(name: string): string {
+  // Split the name into parts (handling parentheses)
+  const parts = name.split(/($$.*?$$)/);
+
+  return parts
+    .map((part) => {
+      if (part.startsWith("(") && part.endsWith(")")) {
+        // Handle the part inside parentheses
+        return "(" + capitalizeWord(part.slice(1, -1)) + ")";
+      } else {
+        // Handle regular name parts
+        return part.split(" ").map(capitalizeWord).join(" ");
+      }
+    })
+    .join("");
+}
+
+function capitalizeWord(word: string): string {
+  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+}
+
 function capitalizeString(str: string, full = true) {
   // Split the string into an array of words
 
   if (full) {
-    const words = str.split(" ");
-
-    // Capitalize the first letter of each word
-    const capitalizedWords = words.map((word) => {
-      if (word.length === 0) return word; // Handle empty strings
-      return word[0].toUpperCase() + word.slice(1).toLowerCase();
-    });
-    return capitalizedWords.join(" ");
+    return capitalizeName(str);
   } else {
     return `${str[0].toUpperCase()}${str.slice(1)}`;
   }
@@ -49,8 +64,23 @@ const arr = [
   "nxnThoiGianCuTruDen",
   "nktNgaySinh",
   "nktNgayChet",
+  "nksNgaySinh",
+  "meNgaySinh",
+  "chaNgaySinh",
 ];
-const arr1 = ["nguoiThucHien", "nguoiKy", "nxnHoTen", "nycHoTen", "nktHoTen"];
+const arr1 = [
+  "nguoiThucHien",
+  "nguoiKy",
+  "nxnHoTen",
+  "nycHoTen",
+  "nktHoTen",
+  "nguoiKy",
+  "nguoiThucHien",
+  "nksHoTen",
+  "meHoTen",
+  "chaHoTen",
+  "nycHoTen",
+];
 
 export default function ExcelUploader() {
   const [excelData, setExcelData] = useState<Record<string, any>[]>([]);
@@ -125,6 +155,13 @@ export default function ExcelUploader() {
     },
     [handleFileUpload]
   );
+  const handleFileUploadKS = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      handleFileUpload(e);
+      setForm("KS");
+    },
+    [handleFileUpload]
+  );
 
   const handleFileUploadKT = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -160,7 +197,7 @@ export default function ExcelUploader() {
         JSON.stringify([...excelData, updatedData])
       );
     },
-    [excelData]
+    [excelData, handleData]
   );
 
   const handleExportData = useCallback(() => {
@@ -197,13 +234,13 @@ export default function ExcelUploader() {
       setExcelData(newData);
       setEditingRow(null);
     },
-    [editingRow, excelData]
+    [editingRow, excelData, handleData]
   );
 
   return (
     <div className="space-y-8 w-full">
       {showUpload && (
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 ">
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
             <label className="flex flex-col items-center justify-center cursor-pointer">
               {/* <ArrowUpTrayIcon className="max-w-3 w-3 h-3 text-gray-400" /> */}
@@ -225,6 +262,18 @@ export default function ExcelUploader() {
                 className="hidden"
                 accept=".xlsx, .xls"
                 onChange={handleFileUploadKT}
+              />
+            </label>
+          </div>
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
+            <label className="flex flex-col items-center justify-center cursor-pointer">
+              {/* <ArrowUpTrayIcon className="max-w-3 w-3 h-3 text-gray-400" /> */}
+              <span className="mt-2 text-gray-600">Upload Excel File KS</span>
+              <input
+                type="file"
+                className="hidden"
+                accept=".xlsx, .xls"
+                onChange={handleFileUploadKS}
               />
             </label>
           </div>
@@ -258,6 +307,12 @@ export default function ExcelUploader() {
               />
             ) : form === "KT" ? (
               <DynamicFormKT
+                headers={headers}
+                template={excelData[excelData.length - 1]}
+                onSubmit={handleAddData}
+              />
+            ) : form === "KS" ? (
+              <DynamicFormKS
                 headers={headers}
                 template={excelData[excelData.length - 1]}
                 onSubmit={handleAddData}
