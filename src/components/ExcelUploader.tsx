@@ -240,44 +240,48 @@ export default function ExcelUploader() {
   return (
     <div className="space-y-8 w-full">
       {showUpload && (
-        <div className="flex items-center gap-4 ">
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
-            <label className="flex flex-col items-center justify-center cursor-pointer">
-              {/* <ArrowUpTrayIcon className="max-w-3 w-3 h-3 text-gray-400" /> */}
-              <span className="mt-2 text-gray-600">Upload Excel File HN</span>
-              <input
-                type="file"
-                className="hidden"
-                accept=".xlsx, .xls"
-                onChange={handleFileUploadHN}
-              />
-            </label>
+        <>
+          <h1 className="text-3xl font-bold mb-8">Excel File Manager</h1>
+
+          <div className="flex items-center gap-4 ">
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
+              <label className="flex flex-col items-center justify-center cursor-pointer">
+                {/* <ArrowUpTrayIcon className="max-w-3 w-3 h-3 text-gray-400" /> */}
+                <span className="mt-2 text-gray-600">Upload Excel File HN</span>
+                <input
+                  type="file"
+                  className="hidden"
+                  accept=".xlsx, .xls"
+                  onChange={handleFileUploadHN}
+                />
+              </label>
+            </div>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
+              <label className="flex flex-col items-center justify-center cursor-pointer">
+                {/* <ArrowUpTrayIcon className="max-w-3 w-3 h-3 text-gray-400" /> */}
+                <span className="mt-2 text-gray-600">Upload Excel File KT</span>
+                <input
+                  type="file"
+                  className="hidden"
+                  accept=".xlsx, .xls"
+                  onChange={handleFileUploadKT}
+                />
+              </label>
+            </div>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
+              <label className="flex flex-col items-center justify-center cursor-pointer">
+                {/* <ArrowUpTrayIcon className="max-w-3 w-3 h-3 text-gray-400" /> */}
+                <span className="mt-2 text-gray-600">Upload Excel File KS</span>
+                <input
+                  type="file"
+                  className="hidden"
+                  accept=".xlsx, .xls"
+                  onChange={handleFileUploadKS}
+                />
+              </label>
+            </div>
           </div>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
-            <label className="flex flex-col items-center justify-center cursor-pointer">
-              {/* <ArrowUpTrayIcon className="max-w-3 w-3 h-3 text-gray-400" /> */}
-              <span className="mt-2 text-gray-600">Upload Excel File KT</span>
-              <input
-                type="file"
-                className="hidden"
-                accept=".xlsx, .xls"
-                onChange={handleFileUploadKT}
-              />
-            </label>
-          </div>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
-            <label className="flex flex-col items-center justify-center cursor-pointer">
-              {/* <ArrowUpTrayIcon className="max-w-3 w-3 h-3 text-gray-400" /> */}
-              <span className="mt-2 text-gray-600">Upload Excel File KS</span>
-              <input
-                type="file"
-                className="hidden"
-                accept=".xlsx, .xls"
-                onChange={handleFileUploadKS}
-              />
-            </label>
-          </div>
-        </div>
+        </>
       )}
 
       {headers.length > 0 && (
@@ -288,7 +292,7 @@ export default function ExcelUploader() {
                 UPDATE ROW {editingRow}
               </h2>
             ) : (
-              <h2 className="text-xl font-semibold mb-4">
+              <h2 className="text-xl font-semibold mb-4 text-red-600 uppercase">
                 Add New Data, hiện có: {excelData.length}
               </h2>
             )}

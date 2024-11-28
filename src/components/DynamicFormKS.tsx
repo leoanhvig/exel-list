@@ -86,12 +86,12 @@ export default function DynamicFormKS({
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="grid gap-6 mb-6 md:grid-cols-2">
+      <div className="grid gap-4 mb-6 md:grid-cols-2">
         {headers.map((header) => (
           <div key={header}>
             <label
               htmlFor={header}
-              className="block text-sm mb-2 font-medium text-gray-900 "
+              className="block mb-1 text-gray-900 font-medium"
             >
               {header}
             </label>
@@ -102,7 +102,7 @@ export default function DynamicFormKS({
               value={formData[header]}
               onChange={handleChange}
               required={false}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  "
+              className=" border border-gray-300 text-black rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 text-xl font-bold"
             />
           </div>
         ))}
